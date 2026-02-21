@@ -69,6 +69,7 @@ export function PdfAllergyPage({ page, colors, theme }: Props) {
           {Array.from({ length: config.rows }).map((_, i) => (
             <View
               key={i}
+              wrap={false}
               style={{
                 flexDirection: 'row',
                 borderBottomWidth: 0.5,

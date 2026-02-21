@@ -82,6 +82,7 @@ export function PdfMedicalHistoryPage({ page, personalInfo, colors, theme }: Pro
           {Array.from({ length: config.rows }).map((_, i) => (
             <View
               key={i}
+              wrap={false}
               style={{
                 flexDirection: 'row',
                 borderBottomWidth: 0.5,

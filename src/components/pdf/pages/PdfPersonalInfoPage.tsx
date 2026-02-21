@@ -20,8 +20,6 @@ export function PdfPersonalInfoPage({ page, personalInfo, colors, theme }: Props
   const bloodTypeDisplay =
     personalInfo.bloodType === 'unknown' ? '' : personalInfo.bloodType + '型';
 
-  const firstDoctor = (personalInfo.doctors ?? [])[0];
-
   return (
     <Page size="A6" style={sharedStyles.page}>
       <PdfPageFrame title={page.title} colors={colors} theme={theme}>
@@ -52,15 +50,6 @@ export function PdfPersonalInfoPage({ page, personalInfo, colors, theme }: Props
           </View>
         )}
 
-        {config.showFamilyDoctor && (
-          <>
-            <PdfSectionHeader colors={colors} theme={theme}>かかりつけ医（1件目）</PdfSectionHeader>
-            <PdfField label="医師名" value={firstDoctor?.name || ''} colors={colors} theme={theme} />
-            <PdfField label="病院名" value={firstDoctor?.hospital || ''} colors={colors} theme={theme} />
-            <PdfField label="電話番号" value={firstDoctor?.phone || ''} colors={colors} theme={theme} />
-          </>
-        )}
-
         {config.showEmergencyContacts && (
           <>
             <PdfSectionHeader colors={colors} theme={theme}>緊急連絡先</PdfSectionHeader>
@@ -69,6 +58,7 @@ export function PdfPersonalInfoPage({ page, personalInfo, colors, theme }: Props
               return (
                 <View
                   key={i}
+                  wrap={false}
                   style={{
                     borderWidth: 0.5,
                     borderColor: colors.borderLight,
@@ -94,6 +84,7 @@ export function PdfPersonalInfoPage({ page, personalInfo, colors, theme }: Props
           <>
             <PdfSectionHeader colors={colors} theme={theme}>備考</PdfSectionHeader>
             <View
+              wrap={false}
               style={{
                 borderWidth: 0.5,
                 borderColor: colors.borderLight,

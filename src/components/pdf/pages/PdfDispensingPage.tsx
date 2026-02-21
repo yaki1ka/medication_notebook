@@ -102,6 +102,7 @@ export function PdfDispensingPage({ page, pageIndex, colors, theme }: Props) {
           {Array.from({ length: config.rows }).map((_, rowIdx) => (
             <View
               key={rowIdx}
+              wrap={false}
               style={{
                 flexDirection: 'row',
                 borderBottomWidth: 0.5,
