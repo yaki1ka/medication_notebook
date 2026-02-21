@@ -55,5 +55,5 @@ const themes: Record<DesignTheme, PdfThemeConfig> = {
 };
 
 export function getThemeConfig(theme: DesignTheme): PdfThemeConfig {
-  return themes[theme];
+  return themes[theme] ?? basicTheme;
 }

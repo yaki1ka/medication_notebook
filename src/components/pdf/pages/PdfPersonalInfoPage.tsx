@@ -20,7 +20,7 @@ export function PdfPersonalInfoPage({ page, personalInfo, colors, theme }: Props
   const bloodTypeDisplay =
     personalInfo.bloodType === 'unknown' ? '' : personalInfo.bloodType + '型';
 
-  const firstDoctor = personalInfo.doctors[0];
+  const firstDoctor = (personalInfo.doctors ?? [])[0];
 
   return (
     <Page size="A6" style={sharedStyles.page}>
