@@ -14,10 +14,10 @@ export interface PdfThemeConfig {
 
 const basicTheme: PdfThemeConfig = {
   name: 'basic',
-  headerRadius: 0,
-  sectionRadius: 0,
-  entryBoxRadius: 0,
-  tableRadius: 0,
+  headerRadius: 1,
+  sectionRadius: 1,
+  entryBoxRadius: 1,
+  tableRadius: 1,
   fieldStyle: 'underline',
   headerPaddingV: 4,
   sectionPaddingV: 3,
