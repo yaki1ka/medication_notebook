@@ -26,7 +26,7 @@ const basicTheme: PdfThemeConfig = {
 
 const roundedTheme: PdfThemeConfig = {
   name: 'rounded',
-  headerRadius: 0,
+  headerRadius: 1,
   sectionRadius: 4,
   entryBoxRadius: 6,
   tableRadius: 4,
@@ -38,7 +38,7 @@ const roundedTheme: PdfThemeConfig = {
 
 const kidsTheme: PdfThemeConfig = {
   name: 'kids',
-  headerRadius: 0,
+  headerRadius: 1,
   sectionRadius: 8,
   entryBoxRadius: 10,
   tableRadius: 6,
