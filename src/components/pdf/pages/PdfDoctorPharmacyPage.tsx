@@ -15,8 +15,8 @@ interface Props {
 
 export function PdfDoctorPharmacyPage({ page, personalInfo, colors, theme }: Props) {
   const config = page.config as DoctorPharmacyPageConfig;
-  const doctors = personalInfo.doctors;
-  const pharmacies = personalInfo.pharmacies;
+  const doctors = personalInfo.doctors ?? [];
+  const pharmacies = personalInfo.pharmacies ?? [];
 
   // When there are no entries, show at least 1 empty slot
   const doctorList = doctors.length > 0 ? doctors : [null];

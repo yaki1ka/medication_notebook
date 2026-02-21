@@ -21,8 +21,8 @@ export function PdfDocument({ state }: Props) {
   const { pages, personalInfo, notebookTitle, accentColor, colorMode, designTheme } = state;
   dispensingCount = 0;
 
-  const colors = resolveColors(accentColor, colorMode);
-  const theme = getThemeConfig(designTheme);
+  const colors = resolveColors(accentColor ?? '#2563eb', colorMode ?? 'color');
+  const theme = getThemeConfig(designTheme ?? 'basic');
 
   return (
     <Document

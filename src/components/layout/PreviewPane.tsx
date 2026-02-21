@@ -14,12 +14,14 @@ export function PreviewPane() {
 
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
   const [isRendering, setIsRendering] = useState(true);
+  const [pdfError, setPdfError] = useState<string | null>(null);
   const urlRef = useRef<string | null>(null);
 
   // Async PDF generation
   useEffect(() => {
     let cancelled = false;
     setIsRendering(true);
+    setPdfError(null);
 
     pdf(<PdfDocument state={debouncedState} />)
       .toBlob()
@@ -34,6 +36,7 @@ export function PreviewPane() {
       .catch((err) => {
         if (!cancelled) {
           console.error('PDF render error:', err);
+          setPdfError(err instanceof Error ? err.message : String(err));
           setIsRendering(false);
         }
       });
@@ -137,6 +140,20 @@ export function PreviewPane() {
             <div className="text-center">
               <div className="text-2xl mb-2 animate-spin inline-block">⟳</div>
               <p className="text-sm text-gray-600">PDFを生成中...</p>
+            </div>
+          </div>
+        )}
+        {!isRendering && pdfError && (
+          <div className="absolute inset-0 flex items-center justify-center bg-gray-50">
+            <div className="text-center p-6 max-w-sm">
+              <p className="text-red-600 text-sm font-medium mb-2">PDFの生成に失敗しました</p>
+              <p className="text-gray-500 text-xs break-all mb-3">{pdfError}</p>
+              <button
+                onClick={() => setPdfError(null)}
+                className="text-xs text-blue-500 underline"
+              >
+                閉じる
+              </button>
             </div>
           </div>
         )}
