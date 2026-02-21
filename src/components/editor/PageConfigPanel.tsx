@@ -1,4 +1,4 @@
-import type { NotebookPage, DispensingColumn, DispensingPageConfig } from '../../types/notebook';
+import type { NotebookPage, DispensingColumn, DispensingPageConfig, DoctorPharmacyPageConfig } from '../../types/notebook';
 import { useNotebookStore } from '../../store/notebookStore';
 
 interface Props {
@@ -70,15 +70,6 @@ export function PageConfigPanel({ page }: Props) {
       {page.kind === 'cover' && (
         <div className={sectionClass}>
           <div className={sectionTitle}>カバーページ設定</div>
-          <div className="flex items-center gap-2 mb-1">
-            <span className={labelClass}>アクセントカラー</span>
-            <input
-              type="color"
-              value={(page.config as any).accentColor || '#2563eb'}
-              onChange={(e) => update({ accentColor: e.target.value })}
-              className="w-8 h-6 cursor-pointer rounded"
-            />
-          </div>
           <Toggle
             label="作成日欄を表示"
             checked={(page.config as any).showIssuedDate}
@@ -96,7 +87,7 @@ export function PageConfigPanel({ page }: Props) {
             onChange={(v) => update({ showBloodType: v })}
           />
           <Toggle
-            label="かかりつけ医欄を表示"
+            label="かかりつけ医欄を表示（1件目）"
             checked={(page.config as any).showFamilyDoctor}
             onChange={(v) => update({ showFamilyDoctor: v })}
           />
@@ -201,20 +192,17 @@ export function PageConfigPanel({ page }: Props) {
       {page.kind === 'doctorPharmacy' && (
         <div className={sectionClass}>
           <div className={sectionTitle}>かかりつけ医・薬局ページ設定</div>
-          <RowSlider
-            label="担当医スロット数"
-            value={(page.config as any).doctorSlots}
-            min={1}
-            max={4}
-            onChange={(v) => update({ doctorSlots: v })}
+          <p className="text-xs text-gray-500 mb-2">
+            エントリは「個人情報」タブから追加できます。
+          </p>
+          <Toggle
+            label="備考欄を常に表示"
+            checked={(page.config as DoctorPharmacyPageConfig).showNotes}
+            onChange={(v) => update({ showNotes: v })}
           />
-          <RowSlider
-            label="薬局スロット数"
-            value={(page.config as any).pharmacySlots}
-            min={1}
-            max={4}
-            onChange={(v) => update({ pharmacySlots: v })}
-          />
+          <p className="text-xs text-gray-400 mt-1">
+            ※ 備考欄オフでも入力済みの備考は表示されます
+          </p>
         </div>
       )}
 

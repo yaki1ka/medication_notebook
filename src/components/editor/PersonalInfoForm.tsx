@@ -16,10 +16,17 @@ export function PersonalInfoForm() {
     addEmergencyContact,
     removeEmergencyContact,
     updateEmergencyContact,
+    addDoctor,
+    removeDoctor,
+    updateDoctor,
+    addPharmacy,
+    removePharmacy,
+    updatePharmacy,
   } = useNotebookStore();
 
   const handleChange =
-    (field: keyof PersonalInfo) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    (field: keyof PersonalInfo) =>
+    (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
       updatePersonalInfo({ [field]: e.target.value } as Partial<PersonalInfo>);
     };
 
@@ -99,63 +106,103 @@ export function PersonalInfoForm() {
         </div>
       </div>
 
-      {/* Family doctor */}
+      {/* かかりつけ医 - dynamic list */}
       <div className={sectionClass}>
-        <div className={sectionTitleClass}>かかりつけ医</div>
-        <div className="space-y-2">
-          <div>
-            <label className={labelClass}>医師名</label>
-            <input
-              type="text"
-              value={personalInfo.familyDoctor}
-              onChange={handleChange('familyDoctor')}
-              className={inputClass}
-            />
-          </div>
-          <div>
-            <label className={labelClass}>病院・クリニック名</label>
-            <input
-              type="text"
-              value={personalInfo.familyDoctorHospital}
-              onChange={handleChange('familyDoctorHospital')}
-              className={inputClass}
-            />
-          </div>
-          <div>
-            <label className={labelClass}>電話番号</label>
-            <input
-              type="tel"
-              value={personalInfo.familyDoctorPhone}
-              onChange={handleChange('familyDoctorPhone')}
-              className={inputClass}
-            />
-          </div>
+        <div className="flex items-center justify-between border-b border-blue-200 pb-1 mb-2">
+          <span className="text-sm font-bold text-gray-700">かかりつけ医</span>
+          <button
+            onClick={addDoctor}
+            className="text-xs bg-blue-100 hover:bg-blue-200 text-blue-700 px-2 py-0.5 rounded"
+          >
+            + 追加
+          </button>
         </div>
+        {personalInfo.doctors.map((doctor, i) => (
+          <div key={doctor.id} className="border border-gray-200 rounded p-2 mb-2 bg-gray-50">
+            <div className="flex items-center justify-between mb-1">
+              <span className="text-xs text-gray-500">担当医 {i + 1}</span>
+              <button
+                onClick={() => removeDoctor(doctor.id)}
+                className="text-xs text-red-400 hover:text-red-600"
+              >
+                削除
+              </button>
+            </div>
+            <div className="space-y-1">
+              {[
+                { label: '医師名', field: 'name' as const },
+                { label: '病院・クリニック名', field: 'hospital' as const },
+                { label: '診療科', field: 'department' as const },
+                { label: '電話番号', field: 'phone' as const },
+                { label: '備考', field: 'notes' as const },
+              ].map(({ label, field }) => (
+                <div key={field}>
+                  <label className={labelClass}>{label}</label>
+                  <input
+                    type="text"
+                    value={doctor[field]}
+                    onChange={(e) => updateDoctor(doctor.id, field, e.target.value)}
+                    className={inputClass}
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
+        {personalInfo.doctors.length === 0 && (
+          <p className="text-xs text-gray-400 text-center py-2">
+            「+ 追加」ボタンでかかりつけ医を登録できます
+          </p>
+        )}
       </div>
 
-      {/* Family pharmacy */}
+      {/* かかりつけ薬局 - dynamic list */}
       <div className={sectionClass}>
-        <div className={sectionTitleClass}>かかりつけ薬局</div>
-        <div className="space-y-2">
-          <div>
-            <label className={labelClass}>薬局名</label>
-            <input
-              type="text"
-              value={personalInfo.familyPharmacy}
-              onChange={handleChange('familyPharmacy')}
-              className={inputClass}
-            />
-          </div>
-          <div>
-            <label className={labelClass}>電話番号</label>
-            <input
-              type="tel"
-              value={personalInfo.familyPharmacyPhone}
-              onChange={handleChange('familyPharmacyPhone')}
-              className={inputClass}
-            />
-          </div>
+        <div className="flex items-center justify-between border-b border-blue-200 pb-1 mb-2">
+          <span className="text-sm font-bold text-gray-700">かかりつけ薬局</span>
+          <button
+            onClick={addPharmacy}
+            className="text-xs bg-blue-100 hover:bg-blue-200 text-blue-700 px-2 py-0.5 rounded"
+          >
+            + 追加
+          </button>
         </div>
+        {personalInfo.pharmacies.map((pharmacy, i) => (
+          <div key={pharmacy.id} className="border border-gray-200 rounded p-2 mb-2 bg-gray-50">
+            <div className="flex items-center justify-between mb-1">
+              <span className="text-xs text-gray-500">薬局 {i + 1}</span>
+              <button
+                onClick={() => removePharmacy(pharmacy.id)}
+                className="text-xs text-red-400 hover:text-red-600"
+              >
+                削除
+              </button>
+            </div>
+            <div className="space-y-1">
+              {[
+                { label: '薬局名', field: 'name' as const },
+                { label: '住所', field: 'address' as const },
+                { label: '電話番号', field: 'phone' as const },
+                { label: '備考', field: 'notes' as const },
+              ].map(({ label, field }) => (
+                <div key={field}>
+                  <label className={labelClass}>{label}</label>
+                  <input
+                    type="text"
+                    value={pharmacy[field]}
+                    onChange={(e) => updatePharmacy(pharmacy.id, field, e.target.value)}
+                    className={inputClass}
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
+        {personalInfo.pharmacies.length === 0 && (
+          <p className="text-xs text-gray-400 text-center py-2">
+            「+ 追加」ボタンでかかりつけ薬局を登録できます
+          </p>
+        )}
       </div>
 
       {/* Emergency contacts */}

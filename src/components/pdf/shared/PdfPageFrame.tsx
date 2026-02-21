@@ -1,47 +1,39 @@
-import { View, Text, StyleSheet } from '@react-pdf/renderer';
-import { COLORS, FONT_SIZE } from '../PdfStyles';
+import { View, Text } from '@react-pdf/renderer';
+import { FONT_SIZE } from '../PdfStyles';
+import type { PdfColors } from '../PdfStyles';
+import type { PdfThemeConfig } from '../../../themes';
 
 interface PdfPageFrameProps {
   title: string;
-  accentColor?: string;
+  colors: PdfColors;
+  theme: PdfThemeConfig;
   children: React.ReactNode;
   pageNumber?: number;
 }
 
-const styles = StyleSheet.create({
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    marginBottom: 6,
-  },
-  titleText: {
-    fontSize: FONT_SIZE.heading,
-    fontWeight: 700,
-    color: COLORS.headerText,
-  },
-  pageNumText: {
-    fontSize: FONT_SIZE.tiny,
-    color: COLORS.headerText,
-  },
-  content: {
-    flex: 1,
-  },
-});
-
-export function PdfPageFrame({ title, accentColor, children, pageNumber }: PdfPageFrameProps) {
-  const bgColor = accentColor || COLORS.primary;
+export function PdfPageFrame({ title, colors, theme, children, pageNumber }: PdfPageFrameProps) {
   return (
     <>
-      <View style={[styles.header, { backgroundColor: bgColor }]}>
-        <Text style={styles.titleText}>{title}</Text>
+      <View
+        style={{
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          paddingHorizontal: 8,
+          paddingVertical: theme.headerPaddingV,
+          marginBottom: 6,
+          backgroundColor: colors.headerBg,
+          borderRadius: theme.headerRadius,
+        }}
+      >
+        <Text style={{ fontSize: FONT_SIZE.heading, fontWeight: 700, color: colors.headerText }}>
+          {title}
+        </Text>
         {pageNumber !== undefined && (
-          <Text style={styles.pageNumText}>{pageNumber}</Text>
+          <Text style={{ fontSize: FONT_SIZE.tiny, color: colors.headerText }}>{pageNumber}</Text>
         )}
       </View>
-      <View style={styles.content}>{children}</View>
+      <View style={{ flex: 1 }}>{children}</View>
     </>
   );
 }

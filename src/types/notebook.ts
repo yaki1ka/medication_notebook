@@ -6,6 +6,23 @@ export interface EmergencyContact {
   phone: string;
 }
 
+export interface DoctorEntry {
+  id: string;
+  name: string;
+  hospital: string;
+  department: string;
+  phone: string;
+  notes: string;
+}
+
+export interface PharmacyEntry {
+  id: string;
+  name: string;
+  address: string;
+  phone: string;
+  notes: string;
+}
+
 export interface PersonalInfo {
   name: string;
   nameKana: string;
@@ -14,14 +31,15 @@ export interface PersonalInfo {
   address: string;
   phone: string;
   preExistingConditions: string;
-  familyDoctor: string;
-  familyDoctorHospital: string;
-  familyDoctorPhone: string;
-  familyPharmacy: string;
-  familyPharmacyPhone: string;
+  doctors: DoctorEntry[];
+  pharmacies: PharmacyEntry[];
   emergencyContacts: EmergencyContact[];
   otherNotes: string;
 }
+
+// ---- Global Style Settings ----
+export type ColorMode = 'color' | 'monochrome';
+export type DesignTheme = 'basic' | 'rounded' | 'kids';
 
 // ---- Page Template Types ----
 export type PageKind =
@@ -36,7 +54,6 @@ export type PageKind =
 // ---- Per-page configuration ----
 export interface CoverPageConfig {
   kind: 'cover';
-  accentColor: string;
   showIssuedDate: boolean;
 }
 
@@ -79,8 +96,7 @@ export interface DispensingPageConfig {
 
 export interface DoctorPharmacyPageConfig {
   kind: 'doctorPharmacy';
-  doctorSlots: number;
-  pharmacySlots: number;
+  showNotes: boolean;
 }
 
 export interface NotesPageConfig {
@@ -112,4 +128,7 @@ export interface NotebookState {
   notebookTitle: string;
   personalInfo: PersonalInfo;
   pages: NotebookPage[];
+  accentColor: string;
+  colorMode: ColorMode;
+  designTheme: DesignTheme;
 }

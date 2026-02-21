@@ -1,35 +1,17 @@
-import { Page, View, StyleSheet } from '@react-pdf/renderer';
+import { Page, View } from '@react-pdf/renderer';
 import type { NotebookPage, NotesPageConfig } from '../../../types/notebook';
-import { sharedStyles, COLORS, LIVE_WIDTH } from '../PdfStyles';
+import { sharedStyles, LIVE_WIDTH } from '../PdfStyles';
+import type { PdfColors } from '../PdfStyles';
+import type { PdfThemeConfig } from '../../../themes';
 import { PdfPageFrame } from '../shared/PdfPageFrame';
 
 interface Props {
   page: NotebookPage;
+  colors: PdfColors;
+  theme: PdfThemeConfig;
 }
 
-const styles = StyleSheet.create({
-  linesContainer: {
-    flex: 1,
-    flexDirection: 'column',
-  },
-  line: {
-    borderBottomWidth: 0.5,
-    borderBottomColor: COLORS.borderLight,
-    borderBottomStyle: 'solid',
-    flex: 1,
-  },
-  blankArea: {
-    flex: 1,
-    borderWidth: 0.5,
-    borderColor: COLORS.borderLight,
-    borderStyle: 'solid',
-  },
-  dottedContainer: {
-    flex: 1,
-  },
-});
-
-function DottedGrid({ lineCount }: { lineCount: number }) {
+function DottedGrid({ lineCount, colors }: { lineCount: number; colors: PdfColors }) {
   const rows = Math.floor(lineCount / 2);
   const cols = 12;
   return (
@@ -43,7 +25,7 @@ function DottedGrid({ lineCount }: { lineCount: number }) {
                 width: 2,
                 height: 2,
                 borderRadius: 1,
-                backgroundColor: COLORS.borderLight,
+                backgroundColor: colors.borderLight,
                 marginHorizontal: (LIVE_WIDTH / cols - 2) / 2,
               }}
             />
@@ -54,24 +36,41 @@ function DottedGrid({ lineCount }: { lineCount: number }) {
   );
 }
 
-export function PdfNotesPage({ page }: Props) {
+export function PdfNotesPage({ page, colors, theme }: Props) {
   const config = page.config as NotesPageConfig;
-  const accentColor = (page.config as any).accentColor;
 
   return (
     <Page size="A6" style={sharedStyles.page}>
-      <PdfPageFrame title={page.title} accentColor={accentColor}>
+      <PdfPageFrame title={page.title} colors={colors} theme={theme}>
         {config.gridStyle === 'ruled' && (
-          <View style={styles.linesContainer}>
+          <View style={{ flex: 1, flexDirection: 'column' }}>
             {Array.from({ length: config.lineCount }).map((_, i) => (
-              <View key={i} style={styles.line} />
+              <View
+                key={i}
+                style={{
+                  borderBottomWidth: 0.5,
+                  borderBottomColor: colors.borderLight,
+                  borderBottomStyle: 'solid',
+                  flex: 1,
+                }}
+              />
             ))}
           </View>
         )}
 
-        {config.gridStyle === 'blank' && <View style={styles.blankArea} />}
+        {config.gridStyle === 'blank' && (
+          <View
+            style={{
+              flex: 1,
+              borderWidth: 0.5,
+              borderColor: colors.borderLight,
+              borderStyle: 'solid',
+              borderRadius: theme.entryBoxRadius,
+            }}
+          />
+        )}
 
-        {config.gridStyle === 'dotted' && <DottedGrid lineCount={config.lineCount} />}
+        {config.gridStyle === 'dotted' && <DottedGrid lineCount={config.lineCount} colors={colors} />}
       </PdfPageFrame>
     </Page>
   );

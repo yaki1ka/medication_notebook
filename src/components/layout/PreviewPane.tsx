@@ -1,16 +1,54 @@
-import { useState, useCallback } from 'react';
-import { PDFViewer, pdf } from '@react-pdf/renderer';
+import { useState, useCallback, useEffect, useRef } from 'react';
+import { pdf } from '@react-pdf/renderer';
 import { PdfDocument } from '../pdf/PdfDocument';
 import { useDebouncedPdf } from '../../hooks/useDebouncedPdf';
 import { useUiStore } from '../../store/uiStore';
 import { useNotebookStore } from '../../store/notebookStore';
 
 export function PreviewPane() {
-  const debouncedState = useDebouncedPdf(800);
+  const debouncedState = useDebouncedPdf(1200);
   const { isExporting, setExporting } = useUiStore();
   const { personalInfo } = useNotebookStore();
   const [resetConfirm, setResetConfirm] = useState(false);
   const { resetToDefaults } = useNotebookStore();
+
+  const [pdfUrl, setPdfUrl] = useState<string | null>(null);
+  const [isRendering, setIsRendering] = useState(true);
+  const urlRef = useRef<string | null>(null);
+
+  // Async PDF generation
+  useEffect(() => {
+    let cancelled = false;
+    setIsRendering(true);
+
+    pdf(<PdfDocument state={debouncedState} />)
+      .toBlob()
+      .then((blob) => {
+        if (cancelled) return;
+        const url = URL.createObjectURL(blob);
+        if (urlRef.current) URL.revokeObjectURL(urlRef.current);
+        urlRef.current = url;
+        setPdfUrl(url);
+        setIsRendering(false);
+      })
+      .catch((err) => {
+        if (!cancelled) {
+          console.error('PDF render error:', err);
+          setIsRendering(false);
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [debouncedState]);
+
+  // Cleanup blob URL on unmount
+  useEffect(() => {
+    return () => {
+      if (urlRef.current) URL.revokeObjectURL(urlRef.current);
+    };
+  }, []);
 
   const handleExport = useCallback(async () => {
     setExporting(true);
@@ -49,6 +87,9 @@ export function PreviewPane() {
         <div className="flex items-center gap-2">
           <span className="text-sm font-medium text-gray-700">プレビュー</span>
           <span className="text-xs text-gray-400">A6サイズ (105×148mm)</span>
+          {isRendering && (
+            <span className="text-xs text-blue-500 animate-pulse">更新中...</span>
+          )}
         </div>
         <div className="flex items-center gap-2">
           <button
@@ -68,7 +109,7 @@ export function PreviewPane() {
           >
             {isExporting ? (
               <>
-                <span className="animate-spin">⟳</span>
+                <span className="animate-spin inline-block">⟳</span>
                 <span>生成中...</span>
               </>
             ) : (
@@ -81,16 +122,24 @@ export function PreviewPane() {
         </div>
       </div>
 
-      {/* PDF Viewer */}
-      <div className="flex-1 overflow-hidden">
-        <PDFViewer
-          width="100%"
-          height="100%"
-          showToolbar={false}
-          style={{ border: 'none' }}
-        >
-          <PdfDocument state={debouncedState} />
-        </PDFViewer>
+      {/* PDF Viewer area */}
+      <div className="flex-1 overflow-hidden relative">
+        {pdfUrl && (
+          <iframe
+            key={pdfUrl}
+            src={pdfUrl}
+            className="w-full h-full border-0"
+            title="PDF プレビュー"
+          />
+        )}
+        {isRendering && (
+          <div className="absolute inset-0 flex items-center justify-center bg-gray-50 bg-opacity-80">
+            <div className="text-center">
+              <div className="text-2xl mb-2 animate-spin inline-block">⟳</div>
+              <p className="text-sm text-gray-600">PDFを生成中...</p>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

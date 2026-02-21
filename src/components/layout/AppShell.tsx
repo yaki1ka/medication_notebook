@@ -1,5 +1,8 @@
+import { lazy, Suspense } from 'react';
 import { EditorTabs } from '../editor/EditorTabs';
-import { PreviewPane } from './PreviewPane';
+import { PageCountBanner } from './PageCountBanner';
+
+const PreviewPane = lazy(() => import('./PreviewPane').then((m) => ({ default: m.PreviewPane })));
 
 export function AppShell() {
   return (
@@ -22,8 +25,19 @@ export function AppShell() {
       </div>
 
       {/* Preview panel */}
-      <div className="flex-1 overflow-hidden">
-        <PreviewPane />
+      <div className="flex-1 overflow-hidden flex flex-col">
+        <PageCountBanner />
+        <div className="flex-1 overflow-hidden">
+          <Suspense
+            fallback={
+              <div className="flex items-center justify-center h-full text-gray-500 text-sm">
+                読み込み中...
+              </div>
+            }
+          >
+            <PreviewPane />
+          </Suspense>
+        </div>
       </div>
     </div>
   );

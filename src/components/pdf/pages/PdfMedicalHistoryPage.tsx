@@ -1,122 +1,98 @@
-import { Page, View, Text, StyleSheet } from '@react-pdf/renderer';
+import { Page, View, Text } from '@react-pdf/renderer';
 import type { NotebookPage, MedicalHistoryPageConfig, PersonalInfo } from '../../../types/notebook';
-import { sharedStyles, COLORS, FONT_SIZE } from '../PdfStyles';
+import { sharedStyles, FONT_SIZE } from '../PdfStyles';
+import type { PdfColors } from '../PdfStyles';
+import type { PdfThemeConfig } from '../../../themes';
 import { PdfPageFrame } from '../shared/PdfPageFrame';
 import { PdfSectionHeader } from '../shared/PdfSectionHeader';
 
 interface Props {
   page: NotebookPage;
   personalInfo: PersonalInfo;
+  colors: PdfColors;
+  theme: PdfThemeConfig;
 }
 
-const styles = StyleSheet.create({
-  tableWrapper: {
-    borderWidth: 0.5,
-    borderColor: COLORS.border,
-    borderStyle: 'solid',
-    overflow: 'hidden',
-    marginTop: 4,
-  },
-  headerRow: {
-    flexDirection: 'row',
-    backgroundColor: '#dbeafe',
-    borderBottomWidth: 0.5,
-    borderBottomColor: COLORS.border,
-    borderBottomStyle: 'solid',
-  },
-  row: {
-    flexDirection: 'row',
-    borderBottomWidth: 0.5,
-    borderBottomColor: COLORS.borderLight,
-    borderBottomStyle: 'solid',
-    minHeight: 14,
-  },
-  cell: {
-    padding: '2 3',
-    fontSize: FONT_SIZE.tiny,
-    borderRightWidth: 0.5,
-    borderRightColor: COLORS.borderLight,
-    borderRightStyle: 'solid',
-    justifyContent: 'center',
-  },
-  cellLast: {
-    padding: '2 3',
-    fontSize: FONT_SIZE.tiny,
-    justifyContent: 'center',
-  },
-  conditionsBox: {
-    borderWidth: 0.5,
-    borderColor: COLORS.borderLight,
-    borderStyle: 'solid',
-    padding: 5,
-    minHeight: 24,
-    marginBottom: 4,
-  },
-});
-
-export function PdfMedicalHistoryPage({ page, personalInfo }: Props) {
+export function PdfMedicalHistoryPage({ page, personalInfo, colors, theme }: Props) {
   const config = page.config as MedicalHistoryPageConfig;
-  const accentColor = (page.config as any).accentColor;
 
   const dateColWidth = config.showOnsetDateColumn ? 38 : 0;
   const hospitalColWidth = config.showHospitalColumn ? 60 : 0;
 
+  const cellStyle = {
+    padding: '2 3',
+    fontSize: FONT_SIZE.tiny,
+    borderRightWidth: 0.5,
+    borderRightColor: colors.borderLight,
+    borderRightStyle: 'solid' as const,
+    justifyContent: 'center' as const,
+  };
+  const cellLastStyle = { padding: '2 3', fontSize: FONT_SIZE.tiny, justifyContent: 'center' as const };
+
   return (
     <Page size="A6" style={sharedStyles.page}>
-      <PdfPageFrame title={page.title} accentColor={accentColor}>
-        {personalInfo.preExistingConditions && (
-          <>
-            <PdfSectionHeader accentColor={accentColor}>持病・現在治療中の病気</PdfSectionHeader>
-            <View style={styles.conditionsBox}>
-              <Text style={{ fontSize: FONT_SIZE.small }}>
-                {personalInfo.preExistingConditions}
-              </Text>
-            </View>
-          </>
-        )}
-        {!personalInfo.preExistingConditions && (
-          <>
-            <PdfSectionHeader accentColor={accentColor}>持病・現在治療中の病気</PdfSectionHeader>
-            <View style={styles.conditionsBox} />
-          </>
-        )}
+      <PdfPageFrame title={page.title} colors={colors} theme={theme}>
+        <PdfSectionHeader colors={colors} theme={theme}>持病・現在治療中の病気</PdfSectionHeader>
+        <View
+          style={{
+            borderWidth: 0.5,
+            borderColor: colors.borderLight,
+            borderStyle: 'solid',
+            padding: 5,
+            minHeight: 24,
+            marginBottom: 4,
+            borderRadius: theme.entryBoxRadius,
+          }}
+        >
+          <Text style={{ fontSize: FONT_SIZE.small }}>
+            {personalInfo.preExistingConditions}
+          </Text>
+        </View>
 
-        <PdfSectionHeader accentColor={accentColor}>既往歴（過去にかかった病気）</PdfSectionHeader>
+        <PdfSectionHeader colors={colors} theme={theme}>既往歴（過去にかかった病気）</PdfSectionHeader>
 
-        <View style={styles.tableWrapper}>
-          <View style={styles.headerRow}>
-            <Text style={[styles.cell, { flex: 1, fontWeight: 700, fontSize: FONT_SIZE.tiny }]}>
-              病名
-            </Text>
+        <View
+          style={{
+            borderWidth: 0.5,
+            borderColor: colors.border,
+            borderStyle: 'solid',
+            overflow: 'hidden',
+            marginTop: 4,
+            borderRadius: theme.tableRadius,
+          }}
+        >
+          <View
+            style={{
+              flexDirection: 'row',
+              backgroundColor: colors.tableBg,
+              borderBottomWidth: 0.5,
+              borderBottomColor: colors.border,
+              borderBottomStyle: 'solid',
+            }}
+          >
+            <Text style={[cellStyle, { flex: 1, fontWeight: 700 }]}>病名</Text>
             {config.showOnsetDateColumn && (
-              <Text style={[styles.cell, { width: dateColWidth, fontWeight: 700, fontSize: FONT_SIZE.tiny }]}>
-                発症時期
-              </Text>
+              <Text style={[cellStyle, { width: dateColWidth, fontWeight: 700 }]}>発症時期</Text>
             )}
-            {config.showHospitalColumn && (
-              <Text style={[styles.cellLast, { width: hospitalColWidth, fontWeight: 700, fontSize: FONT_SIZE.tiny }]}>
-                医療機関
-              </Text>
-            )}
-            {!config.showHospitalColumn && (
-              <Text style={[styles.cellLast, { width: 30, fontWeight: 700, fontSize: FONT_SIZE.tiny }]}>
-                備考
-              </Text>
-            )}
+            <Text style={[cellLastStyle, { width: config.showHospitalColumn ? hospitalColWidth : 30, fontWeight: 700 }]}>
+              {config.showHospitalColumn ? '医療機関' : '備考'}
+            </Text>
           </View>
 
           {Array.from({ length: config.rows }).map((_, i) => (
-            <View key={i} style={styles.row}>
-              <Text style={[styles.cell, { flex: 1 }]} />
-              {config.showOnsetDateColumn && (
-                <Text style={[styles.cell, { width: dateColWidth }]} />
-              )}
-              {config.showHospitalColumn && (
-                <Text style={[styles.cellLast, { width: hospitalColWidth }]} />
-              )}
-              {!config.showHospitalColumn && (
-                <Text style={[styles.cellLast, { width: 30 }]} />
-              )}
+            <View
+              key={i}
+              style={{
+                flexDirection: 'row',
+                borderBottomWidth: 0.5,
+                borderBottomColor: colors.borderLight,
+                borderBottomStyle: 'solid',
+                minHeight: 14,
+              }}
+            >
+              <Text style={[cellStyle, { flex: 1 }]} />
+              {config.showOnsetDateColumn && <Text style={[cellStyle, { width: dateColWidth }]} />}
+              <Text style={[cellLastStyle, { width: config.showHospitalColumn ? hospitalColWidth : 30 }]} />
             </View>
           ))}
         </View>

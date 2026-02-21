@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 
 interface UiState {
-  activeTab: 'personalInfo' | 'pages';
+  activeTab: 'personalInfo' | 'pages' | 'settings';
   selectedPageId: string | null;
   isExporting: boolean;
   setActiveTab: (tab: UiState['activeTab']) => void;

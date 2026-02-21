@@ -1,4 +1,5 @@
 import { StyleSheet } from '@react-pdf/renderer';
+import type { ColorMode } from '../../types/notebook';
 
 // A6 page dimensions in points (1mm = 2.8346pt)
 // A6 = 105mm × 148mm = 297.64pt × 419.53pt
@@ -26,6 +27,50 @@ export const FONT_SIZE = {
   heading: 11,
   title: 16,
 };
+
+export interface PdfColors {
+  primary: string;
+  headerBg: string;
+  headerText: string;
+  sectionBg: string;
+  border: string;
+  borderLight: string;
+  text: string;
+  textLight: string;
+  white: string;
+  tableBg: string;
+}
+
+export function resolveColors(accentColor: string, colorMode: ColorMode): PdfColors {
+  if (colorMode === 'monochrome') {
+    return {
+      primary: '#333333',
+      headerBg: '#333333',
+      headerText: '#ffffff',
+      sectionBg: '#e4e4e4',
+      border: '#888888',
+      borderLight: '#cccccc',
+      text: '#000000',
+      textLight: '#444444',
+      white: '#ffffff',
+      tableBg: '#eeeeee',
+    };
+  }
+  // Ensure accentColor is a valid hex; fallback to default blue
+  const color = /^#[0-9a-fA-F]{6}$/.test(accentColor) ? accentColor : '#2563eb';
+  return {
+    primary: color,
+    headerBg: color,
+    headerText: '#ffffff',
+    sectionBg: color + '22',
+    border: '#999999',
+    borderLight: '#cccccc',
+    text: '#1a1a1a',
+    textLight: '#555555',
+    white: '#ffffff',
+    tableBg: color + '20',
+  };
+}
 
 export const sharedStyles = StyleSheet.create({
   page: {

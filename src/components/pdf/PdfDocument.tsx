@@ -8,6 +8,8 @@ import { PdfMedicalHistoryPage } from './pages/PdfMedicalHistoryPage';
 import { PdfDispensingPage } from './pages/PdfDispensingPage';
 import { PdfDoctorPharmacyPage } from './pages/PdfDoctorPharmacyPage';
 import { PdfNotesPage } from './pages/PdfNotesPage';
+import { resolveColors } from './PdfStyles';
+import { getThemeConfig } from '../../themes';
 
 interface Props {
   state: NotebookState;
@@ -16,8 +18,11 @@ interface Props {
 let dispensingCount = 0;
 
 export function PdfDocument({ state }: Props) {
-  const { pages, personalInfo, notebookTitle } = state;
+  const { pages, personalInfo, notebookTitle, accentColor, colorMode, designTheme } = state;
   dispensingCount = 0;
+
+  const colors = resolveColors(accentColor, colorMode);
+  const theme = getThemeConfig(designTheme);
 
   return (
     <Document
@@ -35,6 +40,8 @@ export function PdfDocument({ state }: Props) {
                 page={page}
                 personalInfo={personalInfo}
                 notebookTitle={notebookTitle}
+                colors={colors}
+                theme={theme}
               />
             );
           case 'personalInfo':
@@ -43,16 +50,27 @@ export function PdfDocument({ state }: Props) {
                 key={page.id}
                 page={page}
                 personalInfo={personalInfo}
+                colors={colors}
+                theme={theme}
               />
             );
           case 'allergy':
-            return <PdfAllergyPage key={page.id} page={page} />;
+            return (
+              <PdfAllergyPage
+                key={page.id}
+                page={page}
+                colors={colors}
+                theme={theme}
+              />
+            );
           case 'medicalHistory':
             return (
               <PdfMedicalHistoryPage
                 key={page.id}
                 page={page}
                 personalInfo={personalInfo}
+                colors={colors}
+                theme={theme}
               />
             );
           case 'dispensing': {
@@ -62,6 +80,8 @@ export function PdfDocument({ state }: Props) {
                 key={page.id}
                 page={page}
                 pageIndex={dispensingCount}
+                colors={colors}
+                theme={theme}
               />
             );
           }
@@ -71,10 +91,19 @@ export function PdfDocument({ state }: Props) {
                 key={page.id}
                 page={page}
                 personalInfo={personalInfo}
+                colors={colors}
+                theme={theme}
               />
             );
           case 'notes':
-            return <PdfNotesPage key={page.id} page={page} />;
+            return (
+              <PdfNotesPage
+                key={page.id}
+                page={page}
+                colors={colors}
+                theme={theme}
+              />
+            );
           default:
             return null;
         }

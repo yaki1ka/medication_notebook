@@ -12,11 +12,9 @@ import type {
   NotesPageConfig,
 } from '../types/notebook';
 
-// Default configs per page kind
 const defaultConfigs: Record<PageKind, PageConfig> = {
   cover: {
     kind: 'cover',
-    accentColor: '#2563eb',
     showIssuedDate: true,
   } as CoverPageConfig,
 
@@ -50,8 +48,7 @@ const defaultConfigs: Record<PageKind, PageConfig> = {
 
   doctorPharmacy: {
     kind: 'doctorPharmacy',
-    doctorSlots: 3,
-    pharmacySlots: 2,
+    showNotes: false,
   } as DoctorPharmacyPageConfig,
 
   notes: {
@@ -71,7 +68,6 @@ const defaultTitles: Record<PageKind, string> = {
   notes: 'メモ',
 };
 
-// Mandatory pages in default order
 const mandatoryPageSpecs: { kind: PageKind }[] = [
   { kind: 'cover' },
   { kind: 'personalInfo' },
